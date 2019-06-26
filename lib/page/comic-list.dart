@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/request.dart';
+import '../model/ComicModel.dart';
 
 class ComicList extends StatefulWidget{
   @override
@@ -16,8 +17,24 @@ class _ComicListState extends State<ComicList> {
     _retrieveData();
   }
 
-  void _retrieveData() {
-    Request.get('/comic/page');
+  void _retrieveData() async {
+    const String api = '/comic/page';
+    var json = await Request.get(api);
+    if(json == null || json.data == null || !(json.data['list'] is List)){
+      // 走失败逻辑
+      print({
+        'api': api,
+        'msg': '接口返回错误数据',
+        'json': json
+      });
+      return;
+    }
+
+    List<ComicModel> comicList = [];
+
+    json.data['list'].forEach((item) => comicList.add(new ComicModel.formJson(item)));
+
+    print(comicList);
 
     Future.delayed(Duration(seconds: 1)).then((e) {
       Iterable<String> images = [

@@ -1,27 +1,34 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import '../config.dart';
 
 class Request {
   static get (
-      String url,{
+      String api,
+      {
         Map<String, dynamic> qs
       }
   ) async {
     try {
       Dio dio = new Dio();
-      dio.options.baseUrl = "http://10.0.0.4:7001";
-      dio.options.connectTimeout = 5000;
-      Response response = await dio.get('/comic/page', queryParameters: qs);
+      dio.options.baseUrl = appConfig['apiHost'];
+      dio.options.connectTimeout = appConfig['request']['connectTimeout'];
+      Response response = await dio.get(api, queryParameters: qs);
       print({
         'msg': '获得数据',
+        'type': response.data.runtimeType,
         'response': response
       });
+      return response;
     } catch (e) {
+      // 网络错误，超时等会到这来
       print({
+        'api': api,
         'msg': '失败',
         'response': e
       });
+      return null;
     }
   }
 
