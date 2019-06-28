@@ -1,5 +1,5 @@
 Map appConfig = {
-  'apiHost': 'http://192.168.100.152:7001',
+  'apiHost': 'https://haua.cn/h-comic',
   'request': {
     'connectTimeout': 5000
   },

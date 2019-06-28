@@ -19,20 +19,22 @@ class _ComicListState extends State<ComicList> {
 
   void _retrieveData() async {
     const String api = '/comic/page';
-    var json = await Request.get(api);
-    if(json == null || json.data == null || !(json.data['list'] is List)){
+    var response = await Request.get(api);
+    Map data = response.data;
+    if(data == null || data['data'] == null || !(data['data']['list'] is List)){
       // 走失败逻辑
       print({
         'api': api,
+        '1': response.data.keys,
         'msg': '接口返回错误数据',
-        'json': json
+        'json': response
       });
       return;
     }
 
     List<ComicModel> comicList = [];
 
-    json.data['list'].forEach((item) => comicList.add(new ComicModel.formJson(item)));
+    data['data']['list'].forEach((item) => comicList.add(new ComicModel.formJson(item)));
 
     print(comicList);
 
