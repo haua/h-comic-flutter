@@ -10,7 +10,8 @@ import './page/comic-list.dart';
 
 var routerMap = <String, WidgetBuilder>{
   // 好像 / 必须是首页
-  '/': (BuildContext context) => new MyHomePage(title: '漫画app',),
+//  '/': (BuildContext context) => new MyHomePage(title: '漫画app',),
+  '/': (BuildContext context) => new ComicList(),
   '/ComicList': (BuildContext context) => new ComicList(),
   '/ComicDetail': (BuildContext context) => new ComicDetail(),
 };

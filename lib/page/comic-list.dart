@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../model/ComicModel.dart';
 
+import '../widget/loading.dart';
+import '../widget/listEnd.dart';
+
 class ComicList extends StatefulWidget {
   @override
   _ComicListState createState() => new _ComicListState();
@@ -13,22 +16,6 @@ class _ComicListState extends State<ComicList> {
   var nowPage = 1;
   var isLoading = false;
   var isNoMoreData = false;
-
-  final noMore = Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(16.0),
-      child: Text(
-        "没有更多了",
-        style: TextStyle(color: Colors.grey),
-      ));
-  final loading = Container(
-    padding: const EdgeInsets.all(16.0),
-    alignment: Alignment.center,
-    child: SizedBox(
-        width: 24.0,
-        height: 24.0,
-        child: CircularProgressIndicator(strokeWidth: 2.0)),
-  );
 
   @override
   void initState() {
@@ -77,7 +64,7 @@ class _ComicListState extends State<ComicList> {
               if (isLoading) {
                 return loading;
               } else if (isNoMoreData) {
-                return noMore;
+                return listEnd;
               } else {
                 nowPage++;
                 _retrieveData();
