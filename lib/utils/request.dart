@@ -8,7 +8,8 @@ import 'dart:developer' as developer;
 // https://github.com/dart-lang/logging/blob/master/lib/logging.dart
 
 class Request {
-  static Future<Response> get (
+  /// 直接返回body里的data对象
+  static Future get (
       String api,
       {
         Map<String, dynamic> qs
@@ -20,7 +21,12 @@ class Request {
       dio.options.connectTimeout = appConfig['request']['connectTimeout'];
       Response response = await dio.get(api, queryParameters: qs);
       Request.log(api, qs, response);
-      return response;
+
+      if(response.data == null || response.data['code'] != 200 ){
+        return null;
+      }
+
+      return response.data['data'];
     } catch (e) {
       // 网络错误，超时等会到这来
       Request.log(api, qs, null, e);
@@ -28,6 +34,7 @@ class Request {
     }
   }
 
+  // 这个方法弃用了
   static hGet (String url) async {
     try {
       HttpClient httpClient = new HttpClient();
@@ -52,9 +59,11 @@ class Request {
   }
 
   static void log (String api, Map<String, dynamic> param, [Response response, error]) {
-    developer.log('[GET ${api} ${error == null ? 'success' : 'fail'}] [param ${param}] ${response}',
-      level: error == null ? 500 : 900,
-      error: error
-    );
+//    developer.log('[GET ${api} ${error == null ? 'success' : 'fail'}] [param ${param}] ${response}',
+//      level: error == null ? 500 : 900,
+//      error: error
+//    );
+
+    print('[GET ${api} ${error == null ? 'success' : 'fail'}] [param ${param}] response:${response} error:${error}');
   }
 }

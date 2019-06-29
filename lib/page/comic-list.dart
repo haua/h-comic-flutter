@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/request.dart';
 import '../model/ComicModel.dart';
 
 class ComicList extends StatefulWidget {
@@ -9,9 +8,9 @@ class ComicList extends StatefulWidget {
 
 class _ComicListState extends State<ComicList> {
   static const loadingTag = "##loading##"; // 表尾标记
-  var _words = <String>[loadingTag];
   var comicListAll = <ComicModel>[];
 
+  var nowPage = 1;
   var isLoading = false;
   var isNoMoreData = false;
 
@@ -34,12 +33,14 @@ class _ComicListState extends State<ComicList> {
   @override
   void initState() {
     super.initState();
+
     _retrieveData();
   }
 
   void _retrieveData() async {
     isLoading = true;
-    List<ComicModel> comicList = await ComicModel.getList();
+
+    List<ComicModel> comicList = await ComicModel.getPage(page: nowPage);
     isLoading = false;
 
     if (comicList.length <= 0) {
@@ -66,41 +67,37 @@ class _ComicListState extends State<ComicList> {
           title: Text("漫画列表"),
         ),
         body: ListView.separated(
-          itemCount: comicListAll.length,
+          // notice 这里的数量表示这个列表要显示多少个item，如果不加1，最后的loading会出不来哦
+          itemCount: comicListAll.length + 1,
 
           // 渲染单个item的方法
           itemBuilder: (context, index) {
-            print('正在渲染:${index},数量${comicListAll.length}');
             // 到了末尾
-            if (index >= comicListAll.length - 1) {
+            if (index >= comicListAll.length) {
               if (isLoading) {
-                print('正在loading');
                 return loading;
               } else if (isNoMoreData) {
                 return noMore;
               } else {
+                nowPage++;
                 _retrieveData();
-                print('正在loading2');
                 return loading;
               }
             }
+            ComicModel comic = comicListAll[index];
             return MaterialButton(
-              minWidth: double.infinity,
-              color: Colors.green,
+              padding: EdgeInsets.all(0),
               onPressed: () {
                 // 导航到新路由
-                Navigator.pushNamed(context, "/ComicDetail", arguments: "hi");
+                Navigator.pushNamed(context, "/ComicDetail", arguments: {'sid': comic.sid, 'title': comic.title});
               },
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
+              child: Column(
 //                mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Image.network(comicListAll[index].cover,
-                        width: double.infinity, height: 200, fit: BoxFit.cover),
-                    ListTile(title: Text(comicListAll[index].title))
-                  ],
-                ),
+                children: <Widget>[
+                  Image.network(comic.cover,
+                      width: double.infinity, height: 200, fit: BoxFit.cover),
+                  ListTile(title: Text(comic.title))
+                ],
               ),
             );
           },

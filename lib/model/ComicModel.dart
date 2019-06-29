@@ -1,4 +1,5 @@
-import './AuthorModel.dart';
+import 'AuthorModel.dart';
+import 'PageModel.dart';
 import '../utils/request.dart';
 
 class ComicModel {
@@ -16,23 +17,22 @@ class ComicModel {
   final String updateTime;
   final AuthorModel author;
 
-  ComicModel.formJson(Map<String, dynamic> json) :
-      sid = json['sid'],
-      title = json['title'],
-      cover = json['cover'],
-      coverBg = json['coverBg'],
-      desc = json['desc'],
-      tags = json['tags'],
-      state = json['state'],
-      statePublish = json['statePublish'],
-      author = new AuthorModel.formJson(json['author']),
-      publicTime = json['publicTime'],
-      updateTime = json['updateTime'],
-      createdAt = json['createdAt'],
-      updatedAt = json['updatedAt'];
+  ComicModel.formJson(Map<String, dynamic> json)
+      : sid = json['sid'],
+        title = json['title'],
+        cover = json['cover'],
+        coverBg = json['coverBg'],
+        desc = json['desc'],
+        tags = json['tags'],
+        state = json['state'],
+        statePublish = json['statePublish'],
+        author = new AuthorModel.formJson(json['author']),
+        publicTime = json['publicTime'],
+        updateTime = json['updateTime'],
+        createdAt = json['createdAt'],
+        updatedAt = json['updatedAt'];
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'sid': sid,
         'title': title,
         'cover': cover,
@@ -48,24 +48,45 @@ class ComicModel {
         'updatedAt': updatedAt,
       };
 
-  static Future<List<ComicModel>> getList () async {
+  static Future<List<ComicModel>> getPage({int page = 1}) async {
     List<ComicModel> comicList = [];
 
     const String api = '/comic/page';
-    var response = await Request.get(api);
-    Map data = response.data;
-    if(data == null || data['data'] == null || !(data['data']['list'] is List)){
+    Map data = await Request.get(api, qs: {'page': page});
+    if (data == null || !(data['list'] is List)) {
       // 走失败逻辑
-      print({
-        'api': api,
-        '1': response.data.keys,
-        'msg': '接口返回错误数据',
-        'json': response
-      });
-    } else {
-      data['data']['list'].forEach((item) => comicList.add(new ComicModel.formJson(item)));
+      print({'api': api, 'msg': '接口返回错误数据', 'json': data});
+      return comicList;
     }
 
+    data['list']
+        .forEach((item) => comicList.add(new ComicModel.formJson(item)));
+
     return comicList;
+  }
+
+  static Future<ComicModel> getDetail(sid) async {
+    const String api = '/comic/sid';
+    Map data = await Request.get(api, qs: {'sid': sid});
+    return data == null ? null : new ComicModel.formJson(data);
+  }
+
+  // 上面的方法是直接返回list的，这个方法是返回page对象，根据需求用吧
+  static Future<PageModel<ComicModel>> getPageData({int page = 1}) async {
+    List<ComicModel> comicList = [];
+
+    const String api = '/comic/page';
+    Map data = await Request.get(api, qs: {'page': page});
+    if (data == null ||
+        !(data['list'] is List)) {
+      // 走失败逻辑
+      print({'api': api, 'msg': '接口返回错误数据', 'json': data});
+      return PageModel.formJson(null, comicList);
+    }
+
+    data['list']
+        .forEach((item) => comicList.add(new ComicModel.formJson(item)));
+
+    return PageModel.formJson(data, comicList);
   }
 }
