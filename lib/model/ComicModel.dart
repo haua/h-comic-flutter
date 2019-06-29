@@ -1,4 +1,5 @@
 import './AuthorModel.dart';
+import '../utils/request.dart';
 
 class ComicModel {
   final String sid;
@@ -14,8 +15,6 @@ class ComicModel {
   final String publicTime;
   final String updateTime;
   final AuthorModel author;
-
-//  ComicModel(this.sid, this.createdAt, this.updatedAt);
 
   ComicModel.formJson(Map<String, dynamic> json) :
       sid = json['sid'],
@@ -48,4 +47,25 @@ class ComicModel {
         'createdAt': createdAt,
         'updatedAt': updatedAt,
       };
+
+  static Future<List<ComicModel>> getList () async {
+    List<ComicModel> comicList = [];
+
+    const String api = '/comic/page';
+    var response = await Request.get(api);
+    Map data = response.data;
+    if(data == null || data['data'] == null || !(data['data']['list'] is List)){
+      // 走失败逻辑
+      print({
+        'api': api,
+        '1': response.data.keys,
+        'msg': '接口返回错误数据',
+        'json': response
+      });
+    } else {
+      data['data']['list'].forEach((item) => comicList.add(new ComicModel.formJson(item)));
+    }
+
+    return comicList;
+  }
 }

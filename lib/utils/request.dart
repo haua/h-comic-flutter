@@ -2,9 +2,13 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../config.dart';
+import 'dart:developer' as developer;
+
+// level 参考
+// https://github.com/dart-lang/logging/blob/master/lib/logging.dart
 
 class Request {
-  static get (
+  static Future<Response> get (
       String api,
       {
         Map<String, dynamic> qs
@@ -15,19 +19,11 @@ class Request {
       dio.options.baseUrl = appConfig['apiHost'];
       dio.options.connectTimeout = appConfig['request']['connectTimeout'];
       Response response = await dio.get(api, queryParameters: qs);
-      print({
-        'msg': '获得数据',
-        'type': response.data.runtimeType,
-        'response': response
-      });
+      Request.log(api, qs, response);
       return response;
     } catch (e) {
       // 网络错误，超时等会到这来
-      print({
-        'api': api,
-        'msg': '失败',
-        'response': e
-      });
+      Request.log(api, qs, null, e);
       return null;
     }
   }
@@ -53,5 +49,12 @@ class Request {
         'response': e
       });
     }
+  }
+
+  static void log (String api, Map<String, dynamic> param, [Response response, error]) {
+    developer.log('[GET ${api} ${error == null ? 'success' : 'fail'}] [param ${param}] ${response}',
+      level: error == null ? 500 : 900,
+      error: error
+    );
   }
 }

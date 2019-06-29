@@ -27,6 +27,10 @@ dependencies:
     # http 请求库 说明文档： https://pub.dev/packages/dio
   dio: ^2.1.7
 
+  # 在 Dart DevTools 里打印所有网络请求
+  logs:
+    git: https://github.com/pq/logs
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

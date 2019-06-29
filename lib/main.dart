@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import './router.dart';
 
-void main() => runApp(MyApp());
+// 在 Dart DevTools 里打印所有网络请求
+import 'package:logs/logs.dart';
+
+final Log httpLog = new Log('http');
+
+void main () {
+  httpLog.enabled = true;
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
