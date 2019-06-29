@@ -12,7 +12,7 @@ import 'package:h_comic_flutter/model/ComicModel.dart';
 
 void main() {
   test('Counter increments smoke test', () async {
-    List<ComicModel> res = await ComicModel.getList();
+    List<ComicModel> res = await ComicModel.getPage();
 
     // Verify that our counter has incremented.
     expect(res.length > 0, true);
