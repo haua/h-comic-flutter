@@ -31,16 +31,9 @@ dependencies:
   logs:
     git: https://github.com/pq/logs
 
-  # 把json转为model所需的其中之一
-  json_annotation: ^2.4.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # 把json转为model所需的其中之二
-  build_runner: ^1.6.1
-  json_serializable: ^3.0.0
 
 
 # For information on the generic Dart part of this file, see the
