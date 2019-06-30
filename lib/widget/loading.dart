@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-final loading = Container(
+final loadingWidget = Container(
   padding: const EdgeInsets.all(16.0),
   alignment: Alignment.center,
   child: SizedBox(

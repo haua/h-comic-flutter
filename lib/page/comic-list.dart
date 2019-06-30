@@ -62,13 +62,13 @@ class _ComicListState extends State<ComicList> {
             // 到了末尾
             if (index >= comicListAll.length) {
               if (isLoading) {
-                return loading;
+                return loadingWidget;
               } else if (isNoMoreData) {
                 return listEnd;
               } else {
                 nowPage++;
                 _retrieveData();
-                return loading;
+                return loadingWidget;
               }
             }
             ComicModel comic = comicListAll[index];
@@ -76,7 +76,7 @@ class _ComicListState extends State<ComicList> {
               padding: EdgeInsets.all(0),
               onPressed: () {
                 // 导航到新路由
-                Navigator.pushNamed(context, "/ComicDetail", arguments: {'sid': comic.sid, 'title': comic.title});
+                Navigator.pushNamed(context, "/ComicDetail", arguments: {'sid': comic.sid, 'title': comic.title, 'comicModel': comic});
               },
               child: Column(
 //                mainAxisSize: MainAxisSize.max,
