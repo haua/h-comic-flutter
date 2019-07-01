@@ -12,11 +12,12 @@ class _ComicDetailState extends State<ComicDetail>
   String sid;
   String title;
 
+  int tabBarIndex = 0;
+
   bool loading = true;
   ComicModel comicDetailData;
 
   TabController _tabController; //需要定义一个Controller
-  List tabs = ["新闻", "历史", "图片"];
 
   @override
   void initState() {
@@ -34,9 +35,7 @@ class _ComicDetailState extends State<ComicDetail>
 
       this.sid = arguments['sid'];
       this.title = arguments['title'];
-//      getComicDetail();
-
-      _tabController = TabController(length: tabs.length, vsync: this);
+      getComicDetail();
     }
   }
 
@@ -65,28 +64,66 @@ class _ComicDetailState extends State<ComicDetail>
         height: 200,
         fit: BoxFit.cover,
       ),
-
-      //Tab菜单
-      TabBar(
-        labelColor: Colors.black,
-        controller: _tabController,
-        tabs: tabs.map((e) => Tab(text: e)).toList(),
-      )
     ];
 
-//    if(comicDetailData.comicChannels[0] != null) {
-//      comicDetailData.comicChannels[0].episodes.map((episode) {
-//
-//      });
-//    }
+    int channelNum = comicDetailData.comicChannels.length;
+    if (channelNum > 0) {
+      if (channelNum > 1) {
+        // 生成tabBar
+        _tabController = TabController(length: channelNum, vsync: this);
+        //Tab菜单
+        TabBar tabBar = TabBar(
+          labelColor: Colors.black,
+          controller: _tabController,
+          tabs: comicDetailData.comicChannels
+              .map((e) => Tab(text: e.name))
+              .toList(),
+        );
+        contentList.add(tabBar);
+      }
+
+      // 生成每一集
+      if (comicDetailData.comicChannels[tabBarIndex] == null) {
+        tabBarIndex = 0;
+      }
+      ChannelModel showChannel = comicDetailData.comicChannels[tabBarIndex];
+
+      if (showChannel.episodes != null && showChannel.episodes.length > 0) {
+        contentList.add(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: double.infinity, //宽度尽可能大
+              ),
+              child: Wrap(
+                spacing: 8.0, // 主轴(水平)方向间距
+                children: showChannel.episodes.map((episode) {
+                  return OutlineButton(
+                    textColor: Colors.black,
+                    child: Text(episode.title),
+                    onPressed: () {
+                      print(episode);
+                      Navigator.pushNamed(context, "/ComicViewer", arguments: {'sid': episode.sid, 'episodeModel': episode});
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        );
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title ?? '漫画详情'),
       ),
-      body: loading && comicDetailData == null ? loadingBody : Column(
-        children: contentList,
-      ),
+      body: loading || comicDetailData == null
+          ? loadingBody
+          : Column(
+              children: contentList,
+            ),
     );
   }
 }

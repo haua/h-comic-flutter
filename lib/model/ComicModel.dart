@@ -2,6 +2,7 @@ import 'AuthorModel.dart';
 import 'PageModel.dart';
 import 'ChannelModel.dart';
 import '../utils/request.dart';
+export 'ChannelModel.dart';
 
 class ComicModel {
   String sid = '';
@@ -38,6 +39,7 @@ class ComicModel {
     }
   }
 
+  // 获取漫画列表
   static Future<List<ComicModel>> getPage({int page = 1}) async {
     List<ComicModel> comicList = [];
 
@@ -55,10 +57,11 @@ class ComicModel {
     return comicList;
   }
 
+  // 获取漫画详情
   static Future<ComicModel> getDetail(sid) async {
     const String api = '/comic/sid';
     Map data = await Request.get(api, qs: {'sid': sid});
-    return data == null ? null : new ComicModel.formJson(data);
+    return ComicModel.formJson(data);
   }
 
   // 上面的方法是直接返回list的，这个方法是返回page对象，根据需求用吧

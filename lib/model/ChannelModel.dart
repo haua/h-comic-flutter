@@ -14,9 +14,9 @@ class ChannelModel {
     }
   }
 
-  static List<ChannelModel> fromJsonList(List<Map<String, dynamic>> jsonList) {
+  static List<ChannelModel> fromJsonList(List<dynamic> jsonList) {
     if(jsonList is List) {
-      return jsonList.map((json) => ChannelModel.fromJson(json));
+      return jsonList.map((json) => ChannelModel.fromJson(json)).toList();
     }
     return [];
   }
